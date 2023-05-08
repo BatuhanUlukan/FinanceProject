@@ -116,7 +116,7 @@ namespace Finance.DataLayer.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SurName")
+                    b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -148,6 +148,9 @@ namespace Finance.DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerAccountId"), 1L, 1);
 
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("BankBranch")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -164,6 +167,8 @@ namespace Finance.DataLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CustomerAccountId");
+
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("CustomerAccounts");
                 });
@@ -294,6 +299,17 @@ namespace Finance.DataLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Finance.EntityLayer.Concrete.CustomerAccount", b =>
+                {
+                    b.HasOne("Finance.EntityLayer.Concrete.AppUser", "AppUser")
+                        .WithMany("CustomerAccounts")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Finance.EntityLayer.Concrete.AppRole", null)
@@ -343,6 +359,11 @@ namespace Finance.DataLayer.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Finance.EntityLayer.Concrete.AppUser", b =>
+                {
+                    b.Navigation("CustomerAccounts");
                 });
 #pragma warning restore 612, 618
         }
